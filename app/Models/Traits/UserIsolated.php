@@ -18,7 +18,7 @@ trait UserIsolated
         });
 
         static::creating(function ($model) {
-            if (Auth::check() && !$model->user_id) {
+            if (Auth::check() && ! $model->user_id) {
                 $model->user_id = Auth::id();
             }
         });

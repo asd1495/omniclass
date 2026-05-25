@@ -14,7 +14,7 @@ class EloquentStudentRepository implements StudentRepository
     {
         $eloquentStudent = EloquentStudent::find($id);
 
-        if (!$eloquentStudent) {
+        if (! $eloquentStudent) {
             return null;
         }
 
@@ -44,7 +44,7 @@ class EloquentStudentRepository implements StudentRepository
         // but we explicitly pass it here for clarity or in case of background jobs.
         $students = EloquentStudent::where('user_id', $userId)->get();
 
-        return $students->map(fn(EloquentStudent $s) => $this->toDomain($s))->toArray();
+        return $students->map(fn (EloquentStudent $s) => $this->toDomain($s))->toArray();
     }
 
     private function toDomain(EloquentStudent $eloquentStudent): DomainStudent
