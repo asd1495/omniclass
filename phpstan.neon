@@ -5,6 +5,7 @@ parameters:
     paths:
         - app/
         - app/Contexts/
+        - database/
     
     level: 5
 

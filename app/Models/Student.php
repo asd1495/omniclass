@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    /** @use HasFactory<StudentFactory> */
-    use HasFactory, UserIsolated;
+    /** @use HasFactory<\Database\Factories\StudentFactory> */
+    use HasFactory;
+    use UserIsolated;
 
     protected $fillable = [
         'name',
