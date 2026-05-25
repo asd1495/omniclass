@@ -1,0 +1,15 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - app/Contexts/
+    
+    level: 5
+
+    ignoreErrors:
+        # Add ignores if necessary
+    
+    excludePaths:
+        # Add excludes if necessary
