@@ -9,6 +9,7 @@ import StudentList from './pages/students/StudentList';
 import CourseList from './pages/courses/CourseList';
 import CourseRoster from './pages/courses/CourseRoster';
 import SubjectList from './pages/subjects/SubjectList';
+import SubjectRoster from './pages/subjects/SubjectRoster';
 import AttendanceTracker from './pages/attendance/AttendanceTracker';
 import './App.css';
 
@@ -44,6 +45,7 @@ function App() {
             <Route path="courses" element={<CourseList />} />
             <Route path="courses/:id" element={<CourseRoster />} />
             <Route path="subjects" element={<SubjectList />} />
+            <Route path="subjects/:id" element={<SubjectRoster />} />
             <Route path="attendance" element={<AttendanceTracker />} />
           </Route>
 

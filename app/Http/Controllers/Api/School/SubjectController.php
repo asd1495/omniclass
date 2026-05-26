@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\School;
 
 use App\Contexts\School\Application\CreateSubject;
+use App\Contexts\School\Application\GetSubject;
 use App\Contexts\School\Application\ListSubjects;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubjectResource;
@@ -22,11 +23,29 @@ class SubjectController extends Controller
         return SubjectResource::collection($subjects);
     }
 
+    public function show(int $id, GetSubject $getSubject): SubjectResource|JsonResponse
+    {
+        try {
+            $subject = $getSubject->execute($id, (int) Auth::id());
+
+            return new SubjectResource($subject);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
+    }
+
     public function store(Request $request, CreateSubject $createSubject): JsonResponse
     {
-        $request->validate(['name' => 'required|string|max:255']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'course_id' => 'nullable|integer|exists:courses,id',
+        ]);
 
-        $createSubject->execute($request->name, (int) Auth::id());
+        $createSubject->execute(
+            (string) $request->name,
+            (int) Auth::id(),
+            $request->course_id ? (int) $request->course_id : null
+        );
 
         return response()->json(['message' => 'Subject created successfully'], 201);
     }

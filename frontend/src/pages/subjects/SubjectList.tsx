@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, CheckSquare, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, CheckSquare, Loader2, AlertCircle, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import api from '../../services/api';
 import '../students/StudentList.css';
@@ -8,13 +9,27 @@ import '../students/StudentList.css';
 interface Subject {
   id: number;
   name: string;
+  course?: { id: number, name: string };
+}
+
+interface Course {
+  id: number;
+  name: string;
 }
 
 const SubjectList: React.FC = () => {
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
-  const [name, setName] = useState('');
+  const [formData, setFormData] = useState({ name: '', course_id: '' });
   const [formError, setFormError] = useState<string | null>(null);
+
+  const { data: courses } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const response = await api.get('/courses');
+      return response.data.data as Course[];
+    },
+  });
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['subjects'],
@@ -25,11 +40,11 @@ const SubjectList: React.FC = () => {
   });
 
   const createMutation = useMutation({
-    mutationFn: (newName: string) => api.post('/subjects', { name: newName }),
+    mutationFn: (newSubject: typeof formData) => api.post('/subjects', newSubject),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subjects'] });
       setIsAdding(false);
-      setName('');
+      setFormData({ name: '', course_id: '' });
     },
     onError: (err: unknown) => {
       if (axios.isAxiosError(err)) {
@@ -50,7 +65,7 @@ const SubjectList: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
-    createMutation.mutate(name);
+    createMutation.mutate(formData);
   };
 
   if (isLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading subjects...</div>;
@@ -70,15 +85,29 @@ const SubjectList: React.FC = () => {
       {isAdding && (
         <div className="add-student-card">
           <form onSubmit={handleSubmit} className="student-form">
-            <div className="form-group">
-              <label>Subject Name</label>
-              <input 
-                type="text" 
-                value={name} 
-                onChange={e => setName(e.target.value)}
-                placeholder="e.g. Mathematics, Science"
-                required
-              />
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Subject Name</label>
+                <input 
+                  type="text" 
+                  value={formData.name} 
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  placeholder="e.g. Mathematics, Science"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Assigned Course</label>
+                <select 
+                  value={formData.course_id} 
+                  onChange={e => setFormData({...formData, course_id: e.target.value})}
+                >
+                  <option value="">Select a Course (Optional)</option>
+                  {courses?.map(course => (
+                    <option key={course.id} value={course.id}>{course.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             {formError && <div className="error-alert"><AlertCircle size={16}/> {formError}</div>}
             <div className="form-actions">
@@ -98,30 +127,39 @@ const SubjectList: React.FC = () => {
             <thead>
               <tr>
                 <th>Subject Name</th>
+                <th>Course</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {data?.length === 0 ? (
                 <tr>
-                  <td colSpan={2} className="empty-row">No subjects found.</td>
+                  <td colSpan={3} className="empty-row">No subjects found.</td>
                 </tr>
               ) : (
                 data?.map(subject => (
                   <tr key={subject.id}>
                     <td>
-                      <div className="student-info-cell">
+                      <Link to={`/subjects/${subject.id}`} className="student-info-cell" style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div className="avatar-small"><CheckSquare size={14} /></div>
-                        <span>{subject.name}</span>
-                      </div>
+                        <span style={{ fontWeight: 500 }}>{subject.name}</span>
+                      </Link>
+                    </td>
+                    <td>
+                       <span className="course-tag">{subject.course?.name || 'Unassigned'}</span>
                     </td>
                     <td className="text-right">
-                      <button 
-                        className="btn-icon delete" 
-                        onClick={() => { if(window.confirm('Delete subject?')) deleteMutation.mutate(subject.id) }}
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <Link to={`/subjects/${subject.id}`} className="btn-icon">
+                           <Users size={18} />
+                        </Link>
+                        <button 
+                          className="btn-icon delete" 
+                          onClick={() => { if(window.confirm('Delete subject?')) deleteMutation.mutate(subject.id) }}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

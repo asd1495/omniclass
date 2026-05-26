@@ -9,7 +9,8 @@ class Subject
     public function __construct(
         private ?int $id,
         private string $name,
-        private int $userId
+        private int $userId,
+        private ?int $courseId = null
     ) {}
 
     public function getId(): ?int
@@ -25,5 +26,10 @@ class Subject
     public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function getCourseId(): ?int
+    {
+        return $this->courseId;
     }
 }

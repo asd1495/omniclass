@@ -24,6 +24,7 @@ class EloquentSubjectRepository implements SubjectRepository
             [
                 'name' => $subject->getName(),
                 'user_id' => $subject->getUserId(),
+                'course_id' => $subject->getCourseId(),
             ]
         );
     }
@@ -35,7 +36,7 @@ class EloquentSubjectRepository implements SubjectRepository
 
     public function findAllByUserId(int $userId): array
     {
-        return EloquentSubject::where('user_id', $userId)
+        return EloquentSubject::with('course')->where('user_id', $userId)
             ->get()
             ->map(fn (EloquentSubject $s) => $this->toDomain($s))
             ->toArray();
@@ -46,7 +47,8 @@ class EloquentSubjectRepository implements SubjectRepository
         return new DomainSubject(
             $eloquent->id,
             $eloquent->name,
-            $eloquent->user_id
+            $eloquent->user_id,
+            $eloquent->course_id
         );
     }
 }

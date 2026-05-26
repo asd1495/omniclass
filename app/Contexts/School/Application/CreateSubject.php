@@ -13,9 +13,9 @@ class CreateSubject
         private SubjectRepository $repository
     ) {}
 
-    public function execute(string $name, int $userId): void
+    public function execute(string $name, int $userId, ?int $courseId = null): void
     {
-        $subject = new Subject(null, $name, $userId);
+        $subject = new Subject(null, $name, $userId, $courseId);
         $this->repository->save($subject);
     }
 }
