@@ -18,14 +18,12 @@ class StudentController extends Controller
 
     public function store(RegisterStudentRequest $request): JsonResponse
     {
-        // Note: For now, we'll use a hardcoded user_id until we implement Auth.
-        // Once Auth is ready, we'll use Auth::id().
-        $userId = Auth::id() ?? 1;
+        $userId = Auth::id();
 
         $this->registerStudentUseCase->execute(
             $request->validated('name'),
             $request->validated('email'),
-            $userId
+            (int) $userId
         );
 
         return response()->json([
