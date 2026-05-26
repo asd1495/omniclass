@@ -3,6 +3,8 @@ import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import DashboardLayout from './pages/dashboard/DashboardLayout';
+import DashboardOverview from './pages/dashboard/DashboardOverview';
 import './App.css';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -13,33 +15,49 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 };
 
-const Dashboard: React.FC = () => {
-  const { user, logout } = useAuth();
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Dashboard</h1>
-      <p>Welcome, {user?.name}!</p>
-      <button onClick={logout} className="btn" style={{ width: 'auto' }}>Logout</button>
+const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
+  <div className="overview-container">
+    <div className="welcome-section">
+      <h1>{title}</h1>
+      <p>This module is coming soon.</p>
     </div>
-  );
-};
+    <div className="dashboard-placeholder">
+       <div className="placeholder-content">
+          <h3>Work in Progress</h3>
+          <p>We are currently building the {title.toLowerCase()} management features.</p>
+       </div>
+    </div>
+  </div>
+);
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* Protected Dashboard Routes */}
           <Route 
-            path="/dashboard" 
+            path="/" 
             element={
               <PrivateRoute>
-                <Dashboard />
+                <DashboardLayout />
               </PrivateRoute>
-            } 
-          />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+            }
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardOverview />} />
+            <Route path="students" element={<PlaceholderPage title="Students" />} />
+            <Route path="courses" element={<PlaceholderPage title="Courses" />} />
+            <Route path="subjects" element={<PlaceholderPage title="Subjects" />} />
+            <Route path="attendance" element={<PlaceholderPage title="Attendance" />} />
+          </Route>
+
+          {/* Catch all */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>
     </AuthProvider>
