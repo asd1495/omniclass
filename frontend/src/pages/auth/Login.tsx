@@ -13,7 +13,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   
-  const { login } = useAuth();
+  const { login, loginAsGuest } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -89,6 +89,18 @@ const Login: React.FC = () => {
 
         <button type="submit" className="btn" disabled={isLoading}>
           {isLoading ? 'Signing in...' : 'Sign in'}
+        </button>
+
+        <button 
+          type="button" 
+          className="btn" 
+          style={{ backgroundColor: '#f3f4f6', color: '#4b5563', border: '1px solid #e5e7eb' }}
+          onClick={() => {
+            loginAsGuest();
+            navigate('/dashboard');
+          }}
+        >
+          Demo Access (Bypass Auth)
         </button>
       </form>
 

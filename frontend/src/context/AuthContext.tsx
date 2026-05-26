@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (token: string) => Promise<void>;
+  loginAsGuest: () => void;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -54,6 +55,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(newToken);
   };
 
+  const loginAsGuest = () => {
+    const guestUser = { id: 1, name: 'Guest Teacher', email: 'guest@example.com' };
+    localStorage.setItem('token', 'guest-token');
+    setToken('guest-token');
+    setUser(guestUser);
+    setIsLoading(false);
+  };
+
   const logout = () => {
     api.post('/logout').finally(() => {
       localStorage.removeItem('token');
@@ -66,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     token,
     login,
+    loginAsGuest,
     logout,
     isAuthenticated: !!token,
     isLoading
