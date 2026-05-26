@@ -5,6 +5,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import DashboardOverview from './pages/dashboard/DashboardOverview';
+import StudentList from './pages/students/StudentList';
 import './App.css';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -50,7 +51,7 @@ function App() {
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardOverview />} />
-            <Route path="students" element={<PlaceholderPage title="Students" />} />
+            <Route path="students" element={<StudentList />} />
             <Route path="courses" element={<PlaceholderPage title="Courses" />} />
             <Route path="subjects" element={<PlaceholderPage title="Subjects" />} />
             <Route path="attendance" element={<PlaceholderPage title="Attendance" />} />
