@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, Mail, User as UserIcon, Loader2, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 import api from '../../services/api';
 import './StudentList.css';
 
