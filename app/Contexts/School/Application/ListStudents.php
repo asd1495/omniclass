@@ -14,8 +14,12 @@ class ListStudents
     ) {}
 
     /** @return Student[] */
-    public function execute(int $userId): array
+    public function execute(int $userId, ?int $courseId = null): array
     {
+        if ($courseId) {
+            return $this->repository->findByCourseId($courseId, $userId);
+        }
+
         return $this->repository->findAllByUserId($userId);
     }
 }

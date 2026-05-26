@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\School\RegisterStudentRequest;
 use App\Http\Resources\StudentResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,9 +25,10 @@ class StudentController extends Controller
         private DeleteStudent $deleteStudent
     ) {}
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $students = $this->listStudents->execute((int) Auth::id());
+        $courseId = $request->query('course_id') ? (int) $request->query('course_id') : null;
+        $students = $this->listStudents->execute((int) Auth::id(), $courseId);
 
         return StudentResource::collection($students);
     }

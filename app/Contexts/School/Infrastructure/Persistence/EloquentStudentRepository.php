@@ -48,6 +48,16 @@ class EloquentStudentRepository implements StudentRepository
         return $students->map(fn (EloquentStudent $s) => $this->toDomain($s))->toArray();
     }
 
+    public function findByCourseId(int $courseId, int $userId): array
+    {
+        $students = EloquentStudent::with('course')
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->get();
+
+        return $students->map(fn (EloquentStudent $s) => $this->toDomain($s))->toArray();
+    }
+
     private function toDomain(EloquentStudent $eloquentStudent): DomainStudent
     {
         return new DomainStudent(

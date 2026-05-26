@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Calendar, User as UserIcon, Loader2 } from 'lucide-react';
+import { Calendar, User as UserIcon, Loader2, BookOpen } from 'lucide-react';
 import api from '../../services/api';
 import './AttendanceTracker.css';
 
 interface Student {
+  id: number;
+  name: string;
+}
+
+interface Course {
   id: number;
   name: string;
 }
@@ -17,12 +22,23 @@ interface AttendanceRecord {
 const AttendanceTracker: React.FC = () => {
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedCourse, setSelectedCourse] = useState<string>('');
 
-  // Fetch Students
-  const { data: students, isLoading: studentsLoading } = useQuery({
-    queryKey: ['students'],
+  // Fetch Courses for filter
+  const { data: courses } = useQuery({
+    queryKey: ['courses'],
     queryFn: async () => {
-      const response = await api.get('/students');
+      const response = await api.get('/courses');
+      return response.data.data as Course[];
+    },
+  });
+
+  // Fetch Students (filtered by course if selected)
+  const { data: students, isLoading: studentsLoading } = useQuery({
+    queryKey: ['students', selectedCourse],
+    queryFn: async () => {
+      const url = selectedCourse ? `/students?course_id=${selectedCourse}` : '/students';
+      const response = await api.get(url);
       return response.data.data as Student[];
     },
   });
@@ -62,13 +78,27 @@ const AttendanceTracker: React.FC = () => {
           <h1>Attendance Tracker</h1>
           <p>Record and monitor daily student attendance.</p>
         </div>
-        <div className="date-selector">
-          <Calendar size={18} />
-          <input 
-            type="date" 
-            value={selectedDate} 
-            onChange={(e) => setSelectedDate(e.target.value)} 
-          />
+        <div className="tracker-filters">
+          <div className="filter-group">
+            <BookOpen size={16} />
+            <select 
+              value={selectedCourse} 
+              onChange={(e) => setSelectedCourse(e.target.value)}
+            >
+              <option value="">All Courses</option>
+              {courses?.map(course => (
+                <option key={course.id} value={course.id}>{course.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="date-selector">
+            <Calendar size={18} />
+            <input 
+              type="date" 
+              value={selectedDate} 
+              onChange={(e) => setSelectedDate(e.target.value)} 
+            />
+          </div>
         </div>
       </div>
 

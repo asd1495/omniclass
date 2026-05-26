@@ -16,4 +16,7 @@ interface StudentRepository
 
     /** @return Student[] */
     public function findAllByUserId(int $userId): array;
+
+    /** @return Student[] */
+    public function findByCourseId(int $courseId, int $userId): array;
 }
