@@ -11,6 +11,7 @@ import CourseRoster from './pages/courses/CourseRoster';
 import SubjectList from './pages/subjects/SubjectList';
 import SubjectRoster from './pages/subjects/SubjectRoster';
 import AttendanceTracker from './pages/attendance/AttendanceTracker';
+import AttendanceHistory from './pages/attendance/AttendanceHistory';
 import './App.css';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -47,6 +48,7 @@ function App() {
             <Route path="subjects" element={<SubjectList />} />
             <Route path="subjects/:id" element={<SubjectRoster />} />
             <Route path="attendance" element={<AttendanceTracker />} />
+            <Route path="attendance/history" element={<AttendanceHistory />} />
           </Route>
 
           {/* Catch all */}

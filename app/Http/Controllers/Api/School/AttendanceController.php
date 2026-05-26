@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\School;
 
+use App\Contexts\School\Application\GetAttendanceHistory;
 use App\Contexts\School\Application\GetDailyAttendance;
 use App\Contexts\School\Application\RecordAttendance;
 use App\Http\Controllers\Controller;
@@ -18,7 +19,8 @@ class AttendanceController extends Controller
 {
     public function __construct(
         private RecordAttendance $recordAttendance,
-        private GetDailyAttendance $getDailyAttendance
+        private GetDailyAttendance $getDailyAttendance,
+        private GetAttendanceHistory $getAttendanceHistory
     ) {}
 
     public function index(Request $request): AnonymousResourceCollection
@@ -27,6 +29,13 @@ class AttendanceController extends Controller
         $records = $this->getDailyAttendance->execute((string) $date, (int) Auth::id());
 
         return AttendanceResource::collection($records);
+    }
+
+    public function history(): JsonResponse
+    {
+        $history = $this->getAttendanceHistory->execute((int) Auth::id());
+
+        return response()->json(['data' => $history]);
     }
 
     public function store(RecordAttendanceRequest $request): JsonResponse

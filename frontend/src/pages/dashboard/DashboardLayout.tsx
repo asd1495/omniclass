@@ -8,7 +8,8 @@ import {
   LogOut, 
   Menu, 
   User as UserIcon,
-  GraduationCap
+  GraduationCap,
+  History
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import './DashboardLayout.css';
@@ -24,6 +25,7 @@ const DashboardLayout: React.FC = () => {
     { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'Subjects', href: '/subjects', icon: CheckSquare },
     { name: 'Attendance', href: '/attendance', icon: GraduationCap },
+    { name: 'History', href: '/attendance/history', icon: History },
   ];
 
   const isActive = (path: string) => location.pathname === path;

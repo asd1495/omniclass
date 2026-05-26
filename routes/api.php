@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('students', StudentController::class);
     Route::get('attendance', [AttendanceController::class, 'index']);
+    Route::get('attendance/history', [AttendanceController::class, 'history']);
     Route::post('attendance', [AttendanceController::class, 'store']);
     Route::get('dashboard/stats', [DashboardController::class, 'stats']);
     Route::apiResource('courses', CourseController::class);

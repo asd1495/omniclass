@@ -18,8 +18,8 @@ class UpdateSubject
     {
         $subject = $this->repository->findById($id);
 
-        if (!$subject || $subject->getUserId() !== $userId) {
-            throw new Exception("Subject not found");
+        if (! $subject || $subject->getUserId() !== $userId) {
+            throw new Exception('Subject not found');
         }
 
         $updatedSubject = new Subject($id, $name, $userId, $courseId);

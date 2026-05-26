@@ -8,6 +8,7 @@ use App\Contexts\School\Application\CreateSubject;
 use App\Contexts\School\Application\GetSubject;
 use App\Contexts\School\Application\ListSubjects;
 use App\Contexts\School\Application\UpdateSubject;
+use App\Contexts\School\Domain\Repository\SubjectRepository;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubjectResource;
 use Illuminate\Http\JsonResponse;
@@ -72,7 +73,7 @@ class SubjectController extends Controller
         }
     }
 
-    public function destroy(int $id, \App\Contexts\School\Domain\Repository\SubjectRepository $repository): JsonResponse
+    public function destroy(int $id, SubjectRepository $repository): JsonResponse
     {
         $subject = $repository->findById($id);
 
