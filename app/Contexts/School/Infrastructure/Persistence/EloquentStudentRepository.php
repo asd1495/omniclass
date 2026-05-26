@@ -29,6 +29,7 @@ class EloquentStudentRepository implements StudentRepository
                 'name' => $student->getName(),
                 'email' => $student->getEmail(),
                 'user_id' => $student->getUserId(),
+                'course_id' => $student->getCourseId(),
             ]
         );
     }
@@ -42,7 +43,7 @@ class EloquentStudentRepository implements StudentRepository
     {
         // Note: The UserIsolated scope handles the filtering automatically if Auth::check() is true,
         // but we explicitly pass it here for clarity or in case of background jobs.
-        $students = EloquentStudent::where('user_id', $userId)->get();
+        $students = EloquentStudent::with('course')->where('user_id', $userId)->get();
 
         return $students->map(fn (EloquentStudent $s) => $this->toDomain($s))->toArray();
     }
@@ -53,7 +54,8 @@ class EloquentStudentRepository implements StudentRepository
             $eloquentStudent->id,
             $eloquentStudent->name,
             $eloquentStudent->email,
-            $eloquentStudent->user_id
+            $eloquentStudent->user_id,
+            $eloquentStudent->course_id
         );
     }
 }

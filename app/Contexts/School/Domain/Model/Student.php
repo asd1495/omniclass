@@ -10,7 +10,8 @@ class Student
         private ?int $id,
         private string $name,
         private string $email,
-        private int $userId
+        private int $userId,
+        private ?int $courseId = null
     ) {}
 
     public function getId(): ?int
@@ -31,6 +32,11 @@ class Student
     public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function getCourseId(): ?int
+    {
+        return $this->courseId;
     }
 
     public function updateName(string $name): void

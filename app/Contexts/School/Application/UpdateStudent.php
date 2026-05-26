@@ -14,7 +14,7 @@ class UpdateStudent
         private StudentRepository $repository
     ) {}
 
-    public function execute(int $id, string $name, string $email, int $userId): void
+    public function execute(int $id, string $name, string $email, int $userId, ?int $courseId = null): void
     {
         $student = $this->repository->findById($id);
 
@@ -27,7 +27,7 @@ class UpdateStudent
             throw new Exception('Unauthorized');
         }
 
-        $updatedStudent = new Student($id, $name, $email, $userId);
+        $updatedStudent = new Student($id, $name, $email, $userId, $courseId);
         $this->repository->save($updatedStudent);
     }
 }

@@ -20,8 +20,9 @@ const DashboardOverview: React.FC = () => {
   const { data: students, isLoading: sLoading } = useQuery({ queryKey: ['students'], queryFn: () => api.get('/students').then(res => res.data.data) });
   const { data: courses, isLoading: cLoading } = useQuery({ queryKey: ['courses'], queryFn: () => api.get('/courses').then(res => res.data.data) });
   const { data: subjects, isLoading: sbLoading } = useQuery({ queryKey: ['subjects'], queryFn: () => api.get('/subjects').then(res => res.data.data) });
+  const { data: stats, isLoading: stLoading } = useQuery({ queryKey: ['dashboard-stats'], queryFn: () => api.get('/dashboard/stats').then(res => res.data) });
 
-  if (sLoading || cLoading || sbLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading dashboard...</div>;
+  if (sLoading || cLoading || sbLoading || stLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading dashboard...</div>;
 
   return (
     <div className="overview-container">
@@ -34,7 +35,7 @@ const DashboardOverview: React.FC = () => {
         <StatCard title="Total Students" value={students?.length || 0} icon={Users} color="blue" />
         <StatCard title="Total Courses" value={courses?.length || 0} icon={BookOpen} color="indigo" />
         <StatCard title="Total Subjects" value={subjects?.length || 0} icon={CheckSquare} color="green" />
-        <StatCard title="Attendance Rate" value="---" icon={GraduationCap} color="purple" />
+        <StatCard title="Attendance Rate" value={stats?.attendance_rate || '0%'} icon={GraduationCap} color="purple" />
       </div>
 
       <div className="dashboard-placeholder">

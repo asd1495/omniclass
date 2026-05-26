@@ -8,13 +8,28 @@ interface Student {
   id: number;
   name: string;
   email: string;
+  course?: { id: number, name: string };
+}
+
+interface Course {
+  id: number;
+  name: string;
 }
 
 const StudentList: React.FC = () => {
   const queryClient = useQueryClient();
   const [isAdding, setIsSidebarOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', course_id: '' });
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Fetch Courses
+  const { data: courses } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const response = await api.get('/courses');
+      return response.data.data as Course[];
+    },
+  });
 
   // Fetch Students
   const { data, isLoading, isError } = useQuery({
@@ -31,7 +46,7 @@ const StudentList: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['students'] });
       setIsSidebarOpen(false);
-      setFormData({ name: '', email: '' });
+      setFormData({ name: '', email: '', course_id: '' });
     },
     onError: (err: unknown) => {
       if (axios.isAxiosError(err)) {
@@ -94,6 +109,18 @@ const StudentList: React.FC = () => {
                   required
                 />
               </div>
+              <div className="form-group">
+                <label>Assigned Course</label>
+                <select 
+                  value={formData.course_id} 
+                  onChange={e => setFormData({...formData, course_id: e.target.value})}
+                >
+                  <option value="">Select a Course (Optional)</option>
+                  {courses?.map(course => (
+                    <option key={course.id} value={course.id}>{course.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             {formError && <div className="error-alert"><AlertCircle size={16}/> {formError}</div>}
             <div className="form-actions">
@@ -114,6 +141,7 @@ const StudentList: React.FC = () => {
               <tr>
                 <th>Student</th>
                 <th>Email</th>
+                <th>Course</th>
                 <th className="text-right">Actions</th>
               </tr>
             </thead>
@@ -136,6 +164,9 @@ const StudentList: React.FC = () => {
                         <Mail size={14} />
                         <span>{student.email}</span>
                       </div>
+                    </td>
+                    <td>
+                       <span className="course-tag">{student.course?.name || 'Unassigned'}</span>
                     </td>
                     <td className="text-right">
                       <button 

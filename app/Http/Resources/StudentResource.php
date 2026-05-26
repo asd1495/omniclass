@@ -22,6 +22,11 @@ class StudentResource extends JsonResource
             'id' => $student->getId(),
             'name' => $student->getName(),
             'email' => $student->getEmail(),
+            'course_id' => $student->getCourseId(),
+            'course' => $this->whenLoaded('course', fn() => [
+                'id' => $this->resource->course->id,
+                'name' => $this->resource->course->name,
+            ]),
         ];
     }
 }

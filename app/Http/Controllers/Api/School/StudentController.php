@@ -36,7 +36,8 @@ class StudentController extends Controller
         $this->registerStudent->execute(
             $request->validated('name'),
             $request->validated('email'),
-            (int) Auth::id()
+            (int) Auth::id(),
+            $request->validated('course_id') ? (int) $request->validated('course_id') : null
         );
 
         return response()->json([
@@ -51,7 +52,8 @@ class StudentController extends Controller
                 $id,
                 $request->validated('name'),
                 $request->validated('email'),
-                (int) Auth::id()
+                (int) Auth::id(),
+                $request->validated('course_id') ? (int) $request->validated('course_id') : null
             );
 
             return response()->json([

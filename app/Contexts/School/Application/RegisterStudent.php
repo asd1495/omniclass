@@ -13,7 +13,7 @@ class RegisterStudent
         private StudentRepository $repository
     ) {}
 
-    public function execute(string $name, string $email, int $userId): void
+    public function execute(string $name, string $email, int $userId, ?int $courseId = null): void
     {
         // Here we could add business validation (e.g. email already registered)
         // using the repository or a Domain Service.
@@ -22,7 +22,8 @@ class RegisterStudent
             null,
             $name,
             $email,
-            $userId
+            $userId,
+            $courseId
         );
 
         $this->repository->save($student);
