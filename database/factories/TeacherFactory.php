@@ -2,14 +2,14 @@
 
 namespace Database\Factories;
 
-use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Student>
+ * @extends Factory<Teacher>
  */
-class StudentFactory extends Factory
+class TeacherFactory extends Factory
 {
     public function definition(): array
     {
