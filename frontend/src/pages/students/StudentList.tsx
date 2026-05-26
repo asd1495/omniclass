@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Mail, User as UserIcon, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Mail, User as UserIcon, Loader2, AlertCircle, Pencil } from 'lucide-react';
 import axios from 'axios';
 import api from '../../services/api';
 import './StudentList.css';
@@ -20,6 +20,7 @@ interface Course {
 const StudentList: React.FC = () => {
   const queryClient = useQueryClient();
   const [isAdding, setIsSidebarOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', course_id: '' });
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -58,6 +59,24 @@ const StudentList: React.FC = () => {
     }
   });
 
+  // Update Student Mutation
+  const updateMutation = useMutation({
+    mutationFn: (data: typeof formData) => api.put(`/students/${editingStudent?.id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+      setEditingStudent(null);
+      setIsSidebarOpen(false);
+      setFormData({ name: '', email: '', course_id: '' });
+    },
+    onError: (err: unknown) => {
+      if (axios.isAxiosError(err)) {
+        setFormError(err.response?.data?.message || 'Failed to update student');
+      } else {
+        setFormError('An unexpected error occurred');
+      }
+    }
+  });
+
   // Delete Student Mutation
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/students/${id}`),
@@ -69,7 +88,27 @@ const StudentList: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
-    createMutation.mutate(formData);
+    if (editingStudent) {
+      updateMutation.mutate(formData);
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  const startEdit = (student: Student) => {
+    setEditingStudent(student);
+    setFormData({ 
+      name: student.name, 
+      email: student.email, 
+      course_id: student.course?.id?.toString() || '' 
+    });
+    setIsSidebarOpen(true);
+  };
+
+  const cancelAction = () => {
+    setIsSidebarOpen(false);
+    setEditingStudent(null);
+    setFormData({ name: '', email: '', course_id: '' });
   };
 
   if (isLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading students...</div>;
@@ -81,7 +120,7 @@ const StudentList: React.FC = () => {
           <h1>Students</h1>
           <p>Manage your student database and records.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setIsSidebarOpen(!isAdding)}>
+        <button className="btn btn-primary" onClick={isAdding ? cancelAction : () => setIsSidebarOpen(true)}>
           {isAdding ? 'Cancel' : <><Plus size={18} /> Add Student</>}
         </button>
       </div>
@@ -125,8 +164,8 @@ const StudentList: React.FC = () => {
             </div>
             {formError && <div className="error-alert"><AlertCircle size={16}/> {formError}</div>}
             <div className="form-actions">
-              <button type="submit" className="btn btn-primary" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Saving...' : 'Save Student'}
+              <button type="submit" className="btn btn-primary" disabled={createMutation.isPending || updateMutation.isPending}>
+                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : (editingStudent ? 'Update Student' : 'Save Student')}
               </button>
             </div>
           </form>
@@ -149,7 +188,7 @@ const StudentList: React.FC = () => {
             <tbody>
               {data?.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="empty-row">No students found. Add your first student to get started.</td>
+                  <td colSpan={4} className="empty-row">No students found. Add your first student to get started.</td>
                 </tr>
               ) : (
                 data?.map(student => (
@@ -170,13 +209,18 @@ const StudentList: React.FC = () => {
                        <span className="course-tag">{student.course?.name || 'Unassigned'}</span>
                     </td>
                     <td className="text-right">
-                      <button 
-                        className="btn-icon delete" 
-                        onClick={() => { if(window.confirm('Delete student?')) deleteMutation.mutate(student.id) }}
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <button className="btn-icon" onClick={() => startEdit(student)}>
+                           <Pencil size={18} />
+                        </button>
+                        <button 
+                          className="btn-icon delete" 
+                          onClick={() => { if(window.confirm('Delete student?')) deleteMutation.mutate(student.id) }}
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

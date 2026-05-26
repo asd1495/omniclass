@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, CheckSquare, Loader2, AlertCircle, Users } from 'lucide-react';
+import { Plus, Trash2, CheckSquare, Loader2, AlertCircle, Users, Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import api from '../../services/api';
@@ -20,6 +20,7 @@ interface Course {
 const SubjectList: React.FC = () => {
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [formData, setFormData] = useState({ name: '', course_id: '' });
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -55,6 +56,23 @@ const SubjectList: React.FC = () => {
     }
   });
 
+  const updateMutation = useMutation({
+    mutationFn: (data: typeof formData) => api.put(`/subjects/${editingSubject?.id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subjects'] });
+      setIsAdding(false);
+      setEditingSubject(null);
+      setFormData({ name: '', course_id: '' });
+    },
+    onError: (err: unknown) => {
+      if (axios.isAxiosError(err)) {
+        setFormError(err.response?.data?.message || 'Failed to update subject');
+      } else {
+        setFormError('An unexpected error occurred');
+      }
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/subjects/${id}`),
     onSuccess: () => {
@@ -65,7 +83,26 @@ const SubjectList: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
-    createMutation.mutate(formData);
+    if (editingSubject) {
+      updateMutation.mutate(formData);
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  const startEdit = (subject: Subject) => {
+    setEditingSubject(subject);
+    setFormData({ 
+      name: subject.name, 
+      course_id: subject.course?.id?.toString() || '' 
+    });
+    setIsAdding(true);
+  };
+
+  const cancelAction = () => {
+    setIsAdding(false);
+    setEditingSubject(null);
+    setFormData({ name: '', course_id: '' });
   };
 
   if (isLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading subjects...</div>;
@@ -77,7 +114,7 @@ const SubjectList: React.FC = () => {
           <h1>Subjects</h1>
           <p>Manage the topics taught at your school.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setIsAdding(!isAdding)}>
+        <button className="btn btn-primary" onClick={isAdding ? cancelAction : () => setIsAdding(true)}>
           {isAdding ? 'Cancel' : <><Plus size={18} /> Add Subject</>}
         </button>
       </div>
@@ -111,8 +148,8 @@ const SubjectList: React.FC = () => {
             </div>
             {formError && <div className="error-alert"><AlertCircle size={16}/> {formError}</div>}
             <div className="form-actions">
-              <button type="submit" className="btn btn-primary" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Saving...' : 'Save Subject'}
+              <button type="submit" className="btn btn-primary" disabled={createMutation.isPending || updateMutation.isPending}>
+                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : (editingSubject ? 'Update Subject' : 'Save Subject')}
               </button>
             </div>
           </form>
@@ -150,6 +187,9 @@ const SubjectList: React.FC = () => {
                     </td>
                     <td className="text-right">
                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <button className="btn-icon" onClick={() => startEdit(subject)}>
+                           <Pencil size={18} />
+                        </button>
                         <Link to={`/subjects/${subject.id}`} className="btn-icon">
                            <Users size={18} />
                         </Link>
