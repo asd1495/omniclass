@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\School\AttendanceController;
 use App\Http\Controllers\Api\School\CourseController;
+use App\Http\Controllers\Api\School\DashboardController;
 use App\Http\Controllers\Api\School\StudentController;
 use App\Http\Controllers\Api\School\SubjectController;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('students', StudentController::class);
     Route::get('attendance', [AttendanceController::class, 'index']);
     Route::post('attendance', [AttendanceController::class, 'store']);
-    Route::get('dashboard/stats', [\App\Http\Controllers\Api\School\DashboardController::class, 'stats']);
+    Route::get('dashboard/stats', [DashboardController::class, 'stats']);
     Route::apiResource('courses', CourseController::class);
     Route::apiResource('subjects', SubjectController::class);
 });

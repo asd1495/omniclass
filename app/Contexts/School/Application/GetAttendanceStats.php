@@ -16,14 +16,13 @@ class GetAttendanceStats
     public function execute(int $userId): float
     {
         $records = $this->repository->findAllByUserId($userId);
-        
+
         if (empty($records)) {
             return 0.0;
         }
 
         $total = count($records);
-        $present = count(array_filter($records, fn($r) => 
-            $r->getStatus() === AttendanceStatus::PRESENT || 
+        $present = count(array_filter($records, fn ($r) => $r->getStatus() === AttendanceStatus::PRESENT ||
             $r->getStatus() === AttendanceStatus::LATE
         ));
 

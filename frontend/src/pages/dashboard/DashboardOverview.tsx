@@ -17,12 +17,12 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.El
 );
 
 const DashboardOverview: React.FC = () => {
-  const { data: students, isLoading: sLoading } = useQuery({ queryKey: ['students'], queryFn: () => api.get('/students').then(res => res.data.data) });
-  const { data: courses, isLoading: cLoading } = useQuery({ queryKey: ['courses'], queryFn: () => api.get('/courses').then(res => res.data.data) });
-  const { data: subjects, isLoading: sbLoading } = useQuery({ queryKey: ['subjects'], queryFn: () => api.get('/subjects').then(res => res.data.data) });
-  const { data: stats, isLoading: stLoading } = useQuery({ queryKey: ['dashboard-stats'], queryFn: () => api.get('/dashboard/stats').then(res => res.data) });
+  const { data: stats, isLoading } = useQuery({ 
+    queryKey: ['dashboard-summary'], 
+    queryFn: () => api.get('/dashboard/stats').then(res => res.data) 
+  });
 
-  if (sLoading || cLoading || sbLoading || stLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading dashboard...</div>;
+  if (isLoading) return <div className="loading-state"><Loader2 className="spinner" /> Loading dashboard...</div>;
 
   return (
     <div className="overview-container">
@@ -32,9 +32,9 @@ const DashboardOverview: React.FC = () => {
       </div>
 
       <div className="stats-grid">
-        <StatCard title="Total Students" value={students?.length || 0} icon={Users} color="blue" />
-        <StatCard title="Total Courses" value={courses?.length || 0} icon={BookOpen} color="indigo" />
-        <StatCard title="Total Subjects" value={subjects?.length || 0} icon={CheckSquare} color="green" />
+        <StatCard title="Total Students" value={stats?.students || 0} icon={Users} color="blue" />
+        <StatCard title="Total Courses" value={stats?.courses || 0} icon={BookOpen} color="indigo" />
+        <StatCard title="Total Subjects" value={stats?.subjects || 0} icon={CheckSquare} color="green" />
         <StatCard title="Attendance Rate" value={stats?.attendance_rate || '0%'} icon={GraduationCap} color="purple" />
       </div>
 

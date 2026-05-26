@@ -15,7 +15,7 @@ class RegisterStudentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:students,email,' . $this->route('student')],
+            'email' => ['required', 'email', 'max:255', 'unique:students,email,'.$this->route('student')],
             'course_id' => ['nullable', 'integer', 'exists:courses,id'],
         ];
     }
