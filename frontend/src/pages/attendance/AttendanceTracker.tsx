@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Calendar, User as UserIcon, Loader2, Save } from 'lucide-react';
+import { Calendar, User as UserIcon, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 import './AttendanceTracker.css';
 

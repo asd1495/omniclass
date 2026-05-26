@@ -19,21 +19,6 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 };
 
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
-  <div className="overview-container">
-    <div className="welcome-section">
-      <h1>{title}</h1>
-      <p>This module is coming soon.</p>
-    </div>
-    <div className="dashboard-placeholder">
-       <div className="placeholder-content">
-          <h3>Work in Progress</h3>
-          <p>We are currently building the {title.toLowerCase()} management features.</p>
-       </div>
-    </div>
-  </div>
-);
-
 function App() {
   return (
     <AuthProvider>

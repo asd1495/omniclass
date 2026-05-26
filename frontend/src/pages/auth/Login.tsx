@@ -13,7 +13,7 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   
-  const { login, loginAsGuest } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,6 +39,19 @@ const Login: React.FC = () => {
       } else {
         setError('An unexpected error occurred');
       }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoAccess = async () => {
+    setIsLoading(true);
+    try {
+      const response = await api.post('/login-guest');
+      await login(response.data.access_token);
+      navigate('/dashboard');
+    } catch {
+      setError('Demo access currently unavailable');
     } finally {
       setIsLoading(false);
     }
@@ -95,12 +108,10 @@ const Login: React.FC = () => {
           type="button" 
           className="btn" 
           style={{ backgroundColor: '#f3f4f6', color: '#4b5563', border: '1px solid #e5e7eb' }}
-          onClick={() => {
-            loginAsGuest();
-            navigate('/dashboard');
-          }}
+          onClick={handleDemoAccess}
+          disabled={isLoading}
         >
-          Demo Access (Bypass Auth)
+          {isLoading ? 'Accessing...' : 'Demo Access (Bypass Auth)'}
         </button>
       </form>
 

@@ -33,8 +33,12 @@ const StudentList: React.FC = () => {
       setIsSidebarOpen(false);
       setFormData({ name: '', email: '' });
     },
-    onError: (err: any) => {
-      setFormError(err.response?.data?.message || 'Failed to create student');
+    onError: (err: unknown) => {
+      if (axios.isAxiosError(err)) {
+        setFormError(err.response?.data?.message || 'Failed to create student');
+      } else {
+        setFormError('An unexpected error occurred');
+      }
     }
   });
 

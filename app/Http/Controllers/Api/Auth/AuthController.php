@@ -50,6 +50,18 @@ class AuthController extends Controller
         ]);
     }
 
+    public function loginAsGuest(): JsonResponse
+    {
+        /** @var User $user */
+        $user = User::where('email', 'guest@example.com')->firstOrFail();
+        $token = $user->createToken('demo_token')->plainTextToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
     public function logout(): JsonResponse
     {
         /** @var User $user */

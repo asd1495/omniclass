@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Trash2, BookOpen, Loader2, AlertCircle } from 'lucide-react';
+import axios from 'axios';
 import api from '../../services/api';
 import '../students/StudentList.css'; // Reusing base layout styles
 
@@ -30,8 +31,12 @@ const CourseList: React.FC = () => {
       setIsAdding(false);
       setName('');
     },
-    onError: (err: any) => {
-      setFormError(err.response?.data?.message || 'Failed to create course');
+    onError: (err: unknown) => {
+      if (axios.isAxiosError(err)) {
+        setFormError(err.response?.data?.message || 'Failed to create course');
+      } else {
+        setFormError('An unexpected error occurred');
+      }
     }
   });
 

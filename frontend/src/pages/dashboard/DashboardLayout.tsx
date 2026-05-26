@@ -5,10 +5,8 @@ import {
   Users, 
   BookOpen, 
   CheckSquare, 
-  Settings, 
   LogOut, 
   Menu, 
-  X,
   User as UserIcon,
   GraduationCap
 } from 'lucide-react';

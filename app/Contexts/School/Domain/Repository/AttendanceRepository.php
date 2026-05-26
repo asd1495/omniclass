@@ -12,9 +12,10 @@ interface AttendanceRepository
     public function save(Attendance $attendance): void;
 
     public function findByStudentAndDate(int $studentId, DateTimeImmutable $date): ?Attendance;
+
     /** @return Attendance[] */
     public function findByDate(DateTimeImmutable $date, int $userId): array;
+
     /** @return Attendance[] */
     public function findAllByUserId(int $userId): array;
-
 }
