@@ -7,6 +7,7 @@ import DashboardLayout from './pages/dashboard/DashboardLayout';
 import DashboardOverview from './pages/dashboard/DashboardOverview';
 import StudentList from './pages/students/StudentList';
 import CourseList from './pages/courses/CourseList';
+import CourseRoster from './pages/courses/CourseRoster';
 import SubjectList from './pages/subjects/SubjectList';
 import AttendanceTracker from './pages/attendance/AttendanceTracker';
 import './App.css';
@@ -41,6 +42,7 @@ function App() {
             <Route path="dashboard" element={<DashboardOverview />} />
             <Route path="students" element={<StudentList />} />
             <Route path="courses" element={<CourseList />} />
+            <Route path="courses/:id" element={<CourseRoster />} />
             <Route path="subjects" element={<SubjectList />} />
             <Route path="attendance" element={<AttendanceTracker />} />
           </Route>

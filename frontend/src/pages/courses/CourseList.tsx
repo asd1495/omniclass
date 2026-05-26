@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, BookOpen, Loader2, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Loader2, AlertCircle, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import api from '../../services/api';
 import '../students/StudentList.css'; // Reusing base layout styles
@@ -110,18 +111,23 @@ const CourseList: React.FC = () => {
                 data?.map(course => (
                   <tr key={course.id}>
                     <td>
-                      <div className="student-info-cell">
+                      <Link to={`/courses/${course.id}`} className="student-info-cell" style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div className="avatar-small"><BookOpen size={14} /></div>
-                        <span>{course.name}</span>
-                      </div>
+                        <span style={{ fontWeight: 500 }}>{course.name}</span>
+                      </Link>
                     </td>
                     <td className="text-right">
-                      <button 
-                        className="btn-icon delete" 
-                        onClick={() => { if(window.confirm('Delete course?')) deleteMutation.mutate(course.id) }}
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <Link to={`/courses/${course.id}`} className="btn-icon">
+                           <Users size={18} />
+                        </Link>
+                        <button 
+                          className="btn-icon delete" 
+                          onClick={() => { if(window.confirm('Delete course?')) deleteMutation.mutate(course.id) }}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
