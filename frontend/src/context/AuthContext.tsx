@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
 
 interface User {
@@ -16,38 +16,42 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUser = async () => {
-    try {
-      const response = await api.get('/user');
-      setUser(response.data);
-    } catch (error) {
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem('token');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    let isMounted = true;
+    
     if (token) {
-      fetchUser();
+      api.get('/user')
+        .then(response => {
+          if (isMounted) {
+            setUser(response.data);
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          if (isMounted) {
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('token');
+            setIsLoading(false);
+          }
+        });
     } else {
       setIsLoading(false);
     }
+
+    return () => { isMounted = false; };
   }, [token]);
 
   const login = async (newToken: string) => {
     localStorage.setItem('token', newToken);
     setToken(newToken);
-    await fetchUser();
   };
 
   const logout = () => {
@@ -58,17 +62,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
+  const value = useMemo(() => ({
+    user,
+    token,
+    login,
+    logout,
+    isAuthenticated: !!token,
+    isLoading
+  }), [user, token, isLoading]);
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token, isLoading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

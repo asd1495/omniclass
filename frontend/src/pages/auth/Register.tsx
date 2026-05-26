@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
+import axios from 'axios';
 import AuthLayout from './AuthLayout';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 
 const Register: React.FC = () => {
@@ -40,9 +41,13 @@ const Register: React.FC = () => {
       const response = await api.post('/register', formData);
       await login(response.data.access_token);
       navigate('/dashboard');
-    } catch (err: any) {
-      if (err.response?.status === 422) {
-        setErrors(err.response.data.errors);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 422) {
+          setErrors(err.response.data.errors);
+        } else {
+          setErrors({ general: ['An unexpected error occurred. Please try again.'] });
+        }
       } else {
         setErrors({ general: ['An unexpected error occurred. Please try again.'] });
       }

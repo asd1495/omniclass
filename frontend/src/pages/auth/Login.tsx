@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
+import axios from 'axios';
 import AuthLayout from './AuthLayout';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 
 const Login: React.FC = () => {
@@ -32,8 +33,12 @@ const Login: React.FC = () => {
       const response = await api.post('/login', { email, password });
       await login(response.data.access_token);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Invalid email or password');
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setIsLoading(false);
     }
