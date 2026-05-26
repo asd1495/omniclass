@@ -35,6 +35,15 @@ class EloquentAttendanceRepository implements AttendanceRepository
         return $eloquent ? $this->toDomain($eloquent) : null;
     }
 
+    public function findByDate(DateTimeImmutable $date, int $userId): array
+    {
+        $records = EloquentAttendance::where('user_id', $userId)
+            ->where('date', $date->format('Y-m-d'))
+            ->get();
+
+        return $records->map(fn (EloquentAttendance $a) => $this->toDomain($a))->toArray();
+    }
+
     public function findAllByUserId(int $userId): array
     {
         $records = EloquentAttendance::where('user_id', $userId)->get();

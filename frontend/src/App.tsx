@@ -8,6 +8,7 @@ import DashboardOverview from './pages/dashboard/DashboardOverview';
 import StudentList from './pages/students/StudentList';
 import CourseList from './pages/courses/CourseList';
 import SubjectList from './pages/subjects/SubjectList';
+import AttendanceTracker from './pages/attendance/AttendanceTracker';
 import './App.css';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -56,7 +57,7 @@ function App() {
             <Route path="students" element={<StudentList />} />
             <Route path="courses" element={<CourseList />} />
             <Route path="subjects" element={<SubjectList />} />
-            <Route path="attendance" element={<PlaceholderPage title="Attendance" />} />
+            <Route path="attendance" element={<AttendanceTracker />} />
           </Route>
 
           {/* Catch all */}
